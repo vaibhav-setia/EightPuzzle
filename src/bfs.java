@@ -1,2 +1,9 @@
-package PACKAGE_NAME;public class bfs {
+import java.util.ArrayList;
+
+public class bfs {
+
+  int[] puzzleState;
+  int depth;
+  ArrayList<String> solutionPath;
+
 }
