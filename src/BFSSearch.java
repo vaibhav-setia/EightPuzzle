@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -53,15 +52,17 @@ public class BFSSearch {
     System.out.println("Search Time: " + (totalTime / 1000000) + " milliseconds");
 
   }
+
+  //perform BFS search
   public ArrayList<String> BFS(int[] initial) {
 
     ArrayList<String> path = new ArrayList<>();
-    BFSSearch puzzle = new BFSSearch (initial, 0, path);
+    BFSSearch puzzle = new BFSSearch(initial, 0, path);
     frontier.add(puzzle);
 
     while (!frontier.isEmpty()) {
       puzzle = frontier.remove(0);
-      if(puzzle.getCost()>25000)
+      if (puzzle.getCost() > 25000)
         return new ArrayList<>();
       explored.add(puzzle);
       if (isGoal(puzzle.getState())) return puzzle.getPath();
@@ -72,7 +73,6 @@ public class BFSSearch {
     }
     return puzzle.getPath();
   }
-
 
 
   public int[] getState() {
@@ -91,6 +91,7 @@ public class BFSSearch {
     solutionPath.add(move);
   }
 
+  //expand the BFS search on the state in frontier
   public ArrayList<String> expandState(int[] state, int depth, ArrayList<String> path) {
 
     ArrayList<String> notGoal = new ArrayList<>();
@@ -372,6 +373,7 @@ public class BFSSearch {
     return notGoal;
   }
 
+  //move left in state
   public int[] moveLeft(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index - 1];
@@ -379,6 +381,7 @@ public class BFSSearch {
     return newState;
   }
 
+  //move right in state
   public int[] moveRight(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index + 1];
@@ -386,6 +389,7 @@ public class BFSSearch {
     return newState;
   }
 
+  //move up in state
   public int[] moveUp(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index - 3];
@@ -393,6 +397,7 @@ public class BFSSearch {
     return newState;
   }
 
+  //move down in state
   public int[] moveDown(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index + 3];
@@ -400,6 +405,7 @@ public class BFSSearch {
     return newState;
   }
 
+  //find the blank tile
   public int findBlank(int[] state) {
     for (int i = 0; i < 9; i++) {
       if (state[i] == 0) return i;
@@ -407,15 +413,17 @@ public class BFSSearch {
     return -1;
   }
 
+  //initiaing a puzzle state
   public void initPuzzle() {
     Scanner s = new Scanner(System.in);
 
-      System.out.println("Please input initial matrix");
-      scan(s, puzzleState);
+    System.out.println("Please input initial matrix");
+    scan(s, puzzleState);
 
     s.close();
   }
 
+  //input scann fucntion
   static void scan(Scanner s, int[] puzzleState) {
     String initial = s.nextLine();
     int numIndex = 0;
@@ -428,29 +436,32 @@ public class BFSSearch {
     }
   }
 
+  //copying the state
   public int[] duplicateState(int[] state) {
     int[] newState = new int[9];
     System.arraycopy(state, 0, newState, 0, 9);
     return newState;
   }
 
+  //checking if we have reached the goal state
   public Boolean isGoal(int[] state) {
 
-      for (int i = 0; i < 9; i++) {
-        if (state[i] != goal0[i]) return false;
-      }
-      return true;
+    for (int i = 0; i < 9; i++) {
+      if (state[i] != goal0[i]) return false;
+    }
+    return true;
   }
 
+  //printing the state
   public void printState(int[] state) {
     System.out.println("  ---+---+---");
-    for (int i = 0; i < 9; i+=3) {
-      for (int j = i; j < i+3; j++) {
+    for (int i = 0; i < 9; i += 3) {
+      for (int j = i; j < i + 3; j++) {
         System.out.print(" |");
-        if(state[j]==0)
+        if (state[j] == 0)
           System.out.print("  ");
-          else
-            System.out.print(" "+state[j]);
+        else
+          System.out.print(" " + state[j]);
       }
       System.out.print(" | ");
       System.out.println();
@@ -458,6 +469,7 @@ public class BFSSearch {
     }
   }
 
+  //printing the solution
   public void printSolution(List<String> path, int[] initState) {
     int[] state = initState;
     int idx;
@@ -487,6 +499,7 @@ public class BFSSearch {
     }
   }
 
+  //converting the state to string
   public String convertStateToString(int[] initState) {
     StringBuilder stringState = new StringBuilder();
     for (int i = 0; i < 9; i++) {
@@ -495,6 +508,7 @@ public class BFSSearch {
     return stringState.toString();
   }
 
+  //checking if the state is explored
   public boolean isExplored(BFSSearch bfsSearch) {
     for (BFSSearch search : explored) {
       if (convertStateToString(search.getState()).equals(convertStateToString(bfsSearch.getState()))) {
@@ -504,6 +518,7 @@ public class BFSSearch {
     return true;
   }
 
+  //checking if the given state is fontier
   public boolean isFrontier(BFSSearch bfsSearch) {
     for (BFSSearch search : frontier) {
       if (convertStateToString(search.getState()).equals(convertStateToString(bfsSearch.getState()))) {
