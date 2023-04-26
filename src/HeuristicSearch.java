@@ -393,10 +393,19 @@ public class HeuristicSearch {
   }
 
   public void printState(int[] state) {
-    for (int i = 0; i < 9; i++) {
-      System.out.print(state[i] + " ");
+    System.out.println("  ---+---+---");
+    for (int i = 0; i < 9; i+=3) {
+      for (int j = i; j < i+3; j++) {
+        System.out.print(" |");
+        if(state[j]==0)
+          System.out.print("  ");
+        else
+          System.out.print(" "+state[j]);
+      }
+      System.out.print(" | ");
+      System.out.println();
+      System.out.println("  ---+---+---");
     }
-    System.out.println();
   }
 
 
