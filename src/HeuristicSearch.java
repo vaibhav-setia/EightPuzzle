@@ -11,6 +11,7 @@ public class HeuristicSearch {
   List<String> solutionPath;
   int priority;
 
+  //Constructor to initialise a Heuristic Search object.
   public HeuristicSearch() {
     this.state = new int[9];
     this.depth = 0;
@@ -18,36 +19,39 @@ public class HeuristicSearch {
     this.priority = 0;
   }
 
+  //Constructor to initialise a Heuristic Search object with given values.
   public HeuristicSearch
-          (int[] input, int depth, List<String> path, int priority) {
+  (int[] input, int depth, List<String> path, int priority) {
     this.state = input;
     this.depth = depth;
     this.solutionPath = path;
     this.priority = priority;
   }
 
+  //Creating a custom priority queue class
   PQueue pq = new PQueue();
-
+  //Maintaining a visited list
   List<HeuristicSearch> vis = new ArrayList<>();
 
+  //which heuristic to choose
   int hOption;
-
+  //final state
   int[] goalSolution = {1, 2, 3, 4, 5, 6, 7, 8, 0};
 
   public static void main(String[] argv) {
     HeuristicSearch puzzle = new HeuristicSearch();
     puzzle.hOption = puzzle.initPuzzle();
-    int[] init = puzzle.getState();
+    int[] init = puzzle.getState();         //initial state
 
     System.out.print("Initial State: ");
-    puzzle.printState(init);
+    puzzle.printState(init);                //prinitng different states
     System.out.print("Goal State: ");
     puzzle.printGoalState();
     System.out.println("Searching...");
 
     long start = System.nanoTime();
 
-    List<String> solution = (puzzle.AStarSearch(init));
+    List<String> solution = (puzzle.AStarSearch(init));     //finding the solution by running A*
 
     long totalTime = System.nanoTime() - start;
 
@@ -59,17 +63,19 @@ public class HeuristicSearch {
     System.out.println("Search Time: " + (totalTime / 1000000) + " milliseconds");
   }
 
+  //method to do the A* star search for a given heuristic
   public List<String> AStarSearch(int[] initial) {
 
     ArrayList<String> path = new ArrayList<>();
-    HeuristicSearch puzzle = new HeuristicSearch (initial, 0, path, 0);
+    HeuristicSearch puzzle = new HeuristicSearch(initial, 0, path, 0);
     pq.add(puzzle);
-
+    //iterating till all paths in queue are explored
     while (!pq.isEmpty()) {
       puzzle = pq.removeMin();
       vis.add(puzzle);
       if (isGoal(puzzle.getState())) return puzzle.getPath();
       else {
+        //expanding the state to add all next nodes possible
         expandState(puzzle.getState(), puzzle.getCost() + 1, puzzle.getPath());
       }
     }
@@ -97,7 +103,7 @@ public class HeuristicSearch {
   }
 
   public void expandState(int[] state, int depth, List<String> path) {
-
+    //checking where empty tile is and accordingly moving on the valid movies which are possible
     int idx = blankSpace(state);
 
     if (idx != 4) {
@@ -319,6 +325,7 @@ public class HeuristicSearch {
     }
   }
 
+  //if going left
   public int[] leftState(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index - 1];
@@ -326,6 +333,7 @@ public class HeuristicSearch {
     return newState;
   }
 
+  //if going right
   public int[] rightState(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index + 1];
@@ -333,6 +341,7 @@ public class HeuristicSearch {
     return newState;
   }
 
+  //if going up
   public int[] upState(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index - 3];
@@ -340,6 +349,7 @@ public class HeuristicSearch {
     return newState;
   }
 
+  //if going down
   public int[] downState(int[] state, int index) {
     int[] newState = duplicateState(state);
     newState[index] = newState[index + 3];
@@ -347,6 +357,7 @@ public class HeuristicSearch {
     return newState;
   }
 
+  //finiding blank tile
   public int blankSpace(int[] state) {
     for (int i = 0; i < 9; i++) {
       if (state[i] == 0) return i;
@@ -354,6 +365,7 @@ public class HeuristicSearch {
     return -1;
   }
 
+  //initial function to input
   public int initPuzzle() {
     Scanner s = new Scanner(System.in);
 
@@ -379,12 +391,14 @@ public class HeuristicSearch {
     return heuristic;
   }
 
+  //make a new state from the copy of current state
   public int[] duplicateState(int[] state) {
     int[] newState = new int[9];
     System.arraycopy(state, 0, newState, 0, 9);
     return newState;
   }
 
+  //check whether we have reached solution
   public Boolean isGoal(int[] state) {
     for (int i = 0; i < 9; i++) {
       if (state[i] != goalSolution[i]) return false;
@@ -392,15 +406,16 @@ public class HeuristicSearch {
     return true;
   }
 
+  //print the current state
   public void printState(int[] state) {
     System.out.println("  ---+---+---");
-    for (int i = 0; i < 9; i+=3) {
-      for (int j = i; j < i+3; j++) {
+    for (int i = 0; i < 9; i += 3) {
+      for (int j = i; j < i + 3; j++) {
         System.out.print(" |");
-        if(state[j]==0)
+        if (state[j] == 0)
           System.out.print("  ");
         else
-          System.out.print(" "+state[j]);
+          System.out.print(" " + state[j]);
       }
       System.out.print(" | ");
       System.out.println();
@@ -413,6 +428,7 @@ public class HeuristicSearch {
     printState(goalSolution);
   }
 
+  //print the solution  path for the last 'n' moves
   public void printSolutionPath(List<String> path, int[] initialState) {
     int[] state = initialState;
     int index;
@@ -439,42 +455,44 @@ public class HeuristicSearch {
     }
   }
 
+  //compute the priority using heurisitc value
   public int getCostPriority(int[] inputState, int cost) {
     int stateHeuristic;
-    if (hOption == 1) stateHeuristic = one_heuristic(inputState);
-    else stateHeuristic = heuristic2(inputState);
+    if (hOption == 1) stateHeuristic = heuristic_one(inputState);
+    else stateHeuristic = heuristic_two(inputState);
     return stateHeuristic + cost;
   }
 
-  public int one_heuristic(int[] state) {
+  //
+  public int heuristic_one(int[] state) {
     int heuristic = 0;
-    for (int i = 0; i < 9; i++) {
-      if ((state[i] != 0) && (state[i] != goalSolution[i])) heuristic++;
+    for (int itr = 0; itr < 9; itr++) {
+      if ((state[itr] != 0) && (state[itr] != goalSolution[itr])) heuristic++;
     }
     return heuristic;
 
   }
 
-  public int heuristic2(int[] state) {
+  public int heuristic_two(int[] state) {
     int heuristic2 = 0;
 
-    for (int i = 0; i < 9; i++) {
-      if ((state[i] != 0) && (state[i] != goalSolution[i])) {
+    for (int itr = 0; itr < 9; itr++) {
+      if ((state[itr] != 0) && (state[itr] != goalSolution[itr])) {
 
-        int idx = checkGoalIndex(state[i], 0);
+        int idx = checkGoalIndex(state[itr], 0);
 
-        if ((idx == i + 2) || (idx == i - 2)) heuristic2 += 2;
-        else if ((idx == i + 3) || (idx == i - 3)) heuristic2 += 1;
-        else if ((idx == i + 5) || (idx == i - 5)) heuristic2 += 3;
-        else if ((idx == i + 6) || (idx == i - 6)) heuristic2 += 2;
-        else if ((idx == i + 7) || (idx == i - 7)) heuristic2 += 3;
-        else if ((idx == i + 8) || (idx == i - 8)) heuristic2 += 4;
-        else if ((idx == i + 4) || (idx == i - 4)) {
+        if ((idx == itr + 2) || (idx == itr - 2)) heuristic2 += 2;
+        else if ((idx == itr + 3) || (idx == itr - 3)) heuristic2 += 1;
+        else if ((idx == itr + 5) || (idx == itr - 5)) heuristic2 += 3;
+        else if ((idx == itr + 6) || (idx == itr - 6)) heuristic2 += 2;
+        else if ((idx == itr + 7) || (idx == itr - 7)) heuristic2 += 3;
+        else if ((idx == itr + 8) || (idx == itr - 8)) heuristic2 += 4;
+        else if ((idx == itr + 4) || (idx == itr - 4)) {
           if ((idx == 6) || (idx == 2)) heuristic2 += 4;
           else heuristic2 += 2;
-        } else if ((idx == i + 1) || (idx == i - 1)) {
-          if (((idx == 2) && (i == 3)) || ((idx == 3) && (i == 2))
-                  || ((idx == 5) && (i == 6)) || ((idx == 6) && (i == 5))) {
+        } else if ((idx == itr + 1) || (idx == itr - 1)) {
+          if (((idx == 2) && (itr == 3)) || ((idx == 3) && (itr == 2))
+                  || ((idx == 5) && (itr == 6)) || ((idx == 6) && (itr == 5))) {
             heuristic2 += 3;
           } else heuristic2 += 1;
         }
@@ -484,7 +502,7 @@ public class HeuristicSearch {
 
   }
 
-
+  //check at what index the goal is
   public int checkGoalIndex(int state, int goal) {
     if (goal == 0) {
       for (int i = 0; i < goalSolution.length; i++) {
@@ -497,7 +515,7 @@ public class HeuristicSearch {
     return -1;
   }
 
-
+  //convert the state to string for storing purposes
   public String stateToString(int[] state) {
     StringBuilder newState = new StringBuilder();
     for (int i = 0; i < 9; i++) {
@@ -506,7 +524,7 @@ public class HeuristicSearch {
     return newState.toString();
   }
 
-
+  //check if explored already contains the puzzle state
   public Boolean exploredContains(HeuristicSearch puzzle) {
     for (HeuristicSearch vi : vis) {
       if (stateToString(vi.getState()).equals(stateToString(puzzle.getState()))) return true;
